@@ -1,6 +1,4 @@
 - name: Start of playbook
-  hosts: default
-  become: yes
   tasks:
     - name: Update the cache
       apt:
