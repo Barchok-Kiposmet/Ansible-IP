@@ -7,5 +7,7 @@ variable "instances" {
   type = list(string)
   default = [
     "yolo-server",
+    "yolo-client",
+    "yolo-backend",
   ]
 }
