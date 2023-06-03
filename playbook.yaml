@@ -1,5 +1,5 @@
 - name: Start of playbook
-  hosts: all
+  hosts: default
   become: yes
   tasks:
     - name: Update the cache
