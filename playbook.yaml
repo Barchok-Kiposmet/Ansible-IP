@@ -1,23 +1,22 @@
-- name: Install Docker
+- name: Start of playbook
   hosts: all
-  vars:
-    client_image: hawksdev/g2-yolo-client:1.0.0
-    backend_image: hawksdev/g2-yolo-backend:1.0.0
-    app_folder: /opt/yolo
+  become: yes
   tasks:
     - name: Update the cache
       apt:
         update_cache: yes
         upgrade: yes
 
-    - name: Install packages
+    - name: Install git
       apt:
-        name:
-          - apt-transport-https
-          - ca-certificates
-          - curl
-          - software-properties-common
-          - python3-pip
-          - virtualenv
-          - python3-setuptools
+        name: git
+        state: present
         update_cache: yes
+
+    - name: Fetch the Barchok-Kiposmet/yolo GitHub repository
+      git:
+        repo: https://github.com/Barchok-Kiposmet/yolo.git
+        dest: /opt/yolo
+        when: not repo_stat.stat.exists
+
+
