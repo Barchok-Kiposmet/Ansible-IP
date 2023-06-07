@@ -1,16 +1,32 @@
-terraform {
-  required_providers {
-    google = {
-      source = "hashicorp/google"
-      version = "4.67.0"
-    }
-  }
+locals {
+  project_id       = var.project_id
+  network          = "default"
+  image            = "debian-cloud/debian-11"
+  ssh_user         = "ansible"
+  private_key_path = "/Users/patrickkiposmet/.ssh/id_rsa"
 }
 
 provider "google" {
-  project     = var.project_id
-  region      = "us-central1"
-  zone        = "us-central1-c"
+  project = var.project_id
+  region  = "us-central1"
+  zone    = "us-central1-c"
+}
+
+resource "google_service_account" "ansible" {
+  account_id = "ansible-admin"
+}
+
+resource "google_compute_firewall" "web" {
+  name    = "web-access"
+  network = local.network
+
+  allow {
+    protocol = "tcp"
+    ports    = ["80"]
+  }
+
+  source_ranges = ["0.0.0.0/0"]
+  target_tags   = ["web"]
 }
 
 resource "google_compute_instance" "vm_instance" {
@@ -20,20 +36,42 @@ resource "google_compute_instance" "vm_instance" {
 
   boot_disk {
     initialize_params {
-      image = "debian-cloud/debian-11"
+      image = local.image
     }
   }
 
   network_interface {
-    # A default network is created for all GCP projects
-    network = "default"
+    network = local.network
+
     access_config {
+      // Removed empty block
     }
   }
+
+  tags = ["web"]
+
+  provisioner "remote-exec" {
+    inline = ["echo 'Wait until SSH is ready'"]
+
+    connection {
+      type        = "ssh"
+      user        = local.ssh_user
+      private_key = file(local.private_key_path)
+      host        = self.network_interface[0].access_config[0].nat_ip
+    }
+  }
+
+  provisioner "local-exec" {
+    environment = {
+      "LANG" = "en_US.UTF-8"
+    }
+    command = "ansible-playbook -i ${self.network_interface[0].access_config[0].nat_ip}, --private-key ${local.private_key_path} playbook.yaml"
+  }
+  
 }
 
-resource "google_compute_network" "vpc_network" {
-  name                    = "terraform-network"
-  auto_create_subnetworks = "true"
+output "vm_instance" {
+  value = {
+    for k, v in google_compute_instance.vm_instance : k => "http://${v.network_interface.0.access_config.0.nat_ip}"
+  }
 }
-

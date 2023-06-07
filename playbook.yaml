@@ -1,6 +1,8 @@
 - name: Start of playbook
   hosts: all
+  remote_user: ansible
   become: yes
+  
   tasks:
     - name: Update the cache
       apt:
@@ -18,5 +20,4 @@
         repo: https://github.com/Barchok-Kiposmet/yolo.git
         dest: /opt/yolo
         when: not repo_stat.stat.exists
-
 
