@@ -1,0 +1,16 @@
+[all:vars]
+
+# Client server
+[yolo-client]
+
+# Backend server
+[yolo-backend]
+
+# Database server
+[mongodb]
+
+# Group 'multi' with all servers
+[multi:children]
+client
+backend
+mongodb
