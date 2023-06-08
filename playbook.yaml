@@ -1,23 +1,52 @@
-- name: Start of playbook
-  hosts: ansible
-  remote_user: ansible
-  become: yes
-  
+---
+- name: Deploy YOLO Application
+  hosts: gcp_hosts
+  gather_facts: false
+  become: true
+
   tasks:
-    - name: Update the cache
-      apt:
-        update_cache: yes
-        upgrade: yes
-
-    - name: Install git
-      apt:
-        name: git
-        state: present
-        update_cache: yes
-
-    - name: Fetch the Barchok-Kiposmet/yolo GitHub repository
+    - name: Clone the repository
       git:
         repo: https://github.com/Barchok-Kiposmet/yolo.git
         dest: /opt/yolo
-        when: not repo_stat.stat.exists
 
+    - name: Install npm
+      apt:
+        name: npm
+        state: present
+
+    - name: Install Docker dependencies
+      apt:
+        name:
+          [
+            "apt-transport-https",
+            "ca-certificates",
+            "curl",
+            "software-properties-common",
+          ]
+        state: present
+
+    - name: Add Docker GPG key
+      apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        state: present
+
+    - name: Add Docker repository
+      apt_repository:
+        repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu bionic stable
+        state: present
+
+    - name: Install Docker
+      apt:
+        name: docker-ce
+        state: present
+
+    - name: Start Docker service
+      service:
+        name: docker
+        state: started
+
+    - name: Build and start Docker containers
+      command: docker-compose up -d
+      args:
+        chdir: /opt/yolo
