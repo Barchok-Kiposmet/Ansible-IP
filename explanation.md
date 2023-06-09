@@ -18,3 +18,9 @@
 - Create the TF file that provisions the VMs on GCP and use use debian-cloud/debian-11 as the base boot disk
 - Also create ssh-keys locally and save the public key on the project file on GCP VM to allow access. This is under metadata section.
 - Run terraform init, plan then apply to automatically provision the VMs, and starts the ansbile playbook. Once done, the output will be indicated with the IP that you can access the online app.
+
+#### Access the site on the output file as below
+
+vm_instance = {
+  "0" = "http://34.134.24.140"
+  "1" = "http://34.66.248.120"
