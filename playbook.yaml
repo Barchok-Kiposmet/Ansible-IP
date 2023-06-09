@@ -3,8 +3,17 @@
   hosts: gcp_hosts
   gather_facts: false
   become: true
+  vars:
+    client_image: pkiposmet/yolo-client-server:1.1.0
+    backend_image: pkiposmet/yolo-backend-server:1.0.0
+    app_folder: /opt/yolo
 
-  tasks:
+   tasks:
+    - name: Update the cache
+      apt:
+        update_cache: yes
+        upgrade: yes
+
     - name: Clone the repository
       git:
         repo: https://github.com/Barchok-Kiposmet/yolo.git
