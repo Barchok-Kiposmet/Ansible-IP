@@ -22,5 +22,6 @@
 #### Access the site on the output file as below
 
 vm_instance = {
-  "0" = "http://34.134.24.140"
-  "1" = "http://34.66.248.120"
+  "0" = "http://34.30.136.131"
+  "1" = "http://104.154.43.176"
+}

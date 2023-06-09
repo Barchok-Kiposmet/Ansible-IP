@@ -1,6 +1,6 @@
 ---
 - name: Deploy YOLO Application
-  hosts: all
+  hosts: gcp_hosts
   gather_facts: false
   become: true
   vars:
