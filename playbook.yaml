@@ -53,7 +53,7 @@
         name: docker
         state: started
 
-    - name: Build and start Docker containers
+    - name: Start Docker containers
       command: docker-compose up -d
       args:
         chdir: /opt/yolo
