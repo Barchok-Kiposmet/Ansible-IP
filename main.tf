@@ -70,6 +70,7 @@ resource "google_compute_instance" "vm_instance" {
   
 }
 
+## allows us to access the output for the web access.
 output "vm_instance" {
   value = {
     for k, v in google_compute_instance.vm_instance : k => "http://${v.network_interface.0.access_config.0.nat_ip}"
